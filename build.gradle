@@ -1,0 +1,33 @@
+plugins {
+    id 'java' 
+    id 'application'
+    id "org.sonarqube" version "3.5.0.2730"
+}
+
+version = '1.0.0'
+sourceSets.main.java.srcDirs = ['src']
+mainClassName = "edu.najah.cap.Editor"
+
+jar {
+  manifest {
+    attributes(
+      'Main-Class': mainClassName
+    )
+  }
+}
+
+def targetJavaVersion = 17
+java {
+    def javaVersion = JavaVersion.toVersion(targetJavaVersion)
+    sourceCompatibility = javaVersion
+    targetCompatibility = javaVersion
+    if (JavaVersion.current() < javaVersion) {
+        toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
+        options.release = targetJavaVersion
+    }
+}
